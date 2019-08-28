@@ -11,9 +11,13 @@ import android.view.ViewGroup;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.MapTileProviderBasic;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.TilesOverlay;
+import org.osmdroid.views.overlay.compass.CompassOverlay;
+import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 
 import static java.security.AccessController.getContext;
 
@@ -21,6 +25,8 @@ import static java.security.AccessController.getContext;
 public class MainActivity extends AppCompatActivity {
 
     MapView map = null;
+    private CompassOverlay mCompassOverlay;
+
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -29,21 +35,20 @@ public class MainActivity extends AppCompatActivity {
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
-
         //inflate and create the map
         setContentView(R.layout.activity_main);
 
-        map = (MapView) findViewById(R.id.map);
+        map = findViewById(R.id.map);
         map.setTileSource(TileSourceFactory.MAPNIK);
         map.setMultiTouchControls(true);
         IMapController mapController = map.getController();
         GeoPoint startPoint = new GeoPoint(22.308208, 87.281945);
         mapController.setCenter(startPoint);
-    }
 
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mMapView = new MapView(inflater.getContext(), 256, getContext());
-        return mMapView;
+        MapTileProviderBasic mProvider = new MapTileProviderBasic(getApplicationContext());
+        mProvider.setTileSource(TileSourceFactory.FIETS_OVERLAY_NL);
+        TilesOverlay mTilesOverlay = new TilesOverlay(mProvider, this.getBaseContext());
+        map.getOverlays().add(mTilesOverlay);
     }
 
     public void onResume(){
