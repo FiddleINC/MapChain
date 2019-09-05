@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         TilesOverlay mTilesOverlay = new TilesOverlay(mProvider, this.getBaseContext());
         map.getOverlays().add(mTilesOverlay);
 
-        MyLocationNewOverlay mLocationOVerlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getApplicationContext()), map);
+        MyLocationNewOverlay mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getApplicationContext()), map);
         mLocationOVerlay.enableMyLocation();
         map.getOverlays().add(mLocationOVerlay);
 
