@@ -3,15 +3,19 @@ package com.example.test1;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.tileprovider.MapTileProviderBasic;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.MinimapOverlay;
 import org.osmdroid.views.overlay.TilesOverlay;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
@@ -60,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
         CompassOverlay mCompassOverlay = new CompassOverlay(getApplicationContext(), new InternalCompassOrientationProvider(getApplicationContext()), map);
         mCompassOverlay.enableCompass();
         map.getOverlays().add(mCompassOverlay);
+
+        map.getOverlays().add(new MapEventsOverlay(toast()));
+
     }
 
     public void onResume() {
@@ -70,5 +77,24 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
+    }
+
+    public MapEventsReceiver toast() {
+        MapEventsReceiver mReceive = new MapEventsReceiver(){
+            @Override
+            public boolean singleTapConfirmedHelper(GeoPoint p) {
+                Toast.makeText(getBaseContext(),p.getLatitude() + " , "+p.getLongitude(), Toast.LENGTH_LONG).show();
+                double lat = p.getLatitude();
+                double longt = p.getLongitude();
+                //DBHelper(lat, longt);
+                return true;
+            }
+
+            @Override
+            public boolean longPressHelper(GeoPoint p) {
+                return false;
+            }
+        };
+        return mReceive;
     }
 }
