@@ -54,8 +54,8 @@ public class MainActivity extends AppCompatActivity {
         map.getOverlays().add(mTilesOverlay);
 
         MyLocationNewOverlay mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getApplicationContext()), map);
-        mLocationOVerlay.enableMyLocation();
-        map.getOverlays().add(mLocationOVerlay);
+        mLocationOverlay.enableMyLocation();
+        map.getOverlays().add(mLocationOverlay);
 
         CompassOverlay mCompassOverlay = new CompassOverlay(getApplicationContext(), new InternalCompassOrientationProvider(getApplicationContext()), map);
         mCompassOverlay.enableCompass();
