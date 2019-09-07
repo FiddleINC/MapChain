@@ -16,7 +16,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COLUMN_LONGITUDE= "Longitude";
     private static final String COLUMN_GEOHASH = "Geohash";
 
-    DBHelper(Context context) {
+    DBHelper(Context context, double lat, double longt, String geohash) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
