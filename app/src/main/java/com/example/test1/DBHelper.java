@@ -16,8 +16,15 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COLUMN_LONGITUDE= "Longitude";
     private static final String COLUMN_GEOHASH = "Geohash";
 
+    private static double latitude,longitude;
+    private static String Geohash;
+
     DBHelper(Context context, double lat, double longt, String geohash) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+
+        latitude = lat;
+        longitude = longt;
+        Geohash = geohash;
     }
 
     @Override
@@ -31,5 +38,14 @@ public class DBHelper extends SQLiteOpenHelper {
         String sql = "DROP TABLE IF EXISTS " + TABLE_NAME + ";";
         sqLiteDatabase.execSQL(sql);
         onCreate(sqLiteDatabase);
+    }
+
+    boolean insertData () {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_LATITUDE, latitude);
+        contentValues.put(COLUMN_LONGITUDE, longitude);
+        contentValues.put(COLUMN_GEOHASH, Geohash);
+        SQLiteDatabase db = getWritableDatabase();
+        return db.insert(TABLE_NAME, null, contentValues) != -1;
     }
 }

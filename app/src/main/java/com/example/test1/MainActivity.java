@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.widget.Toast;
 
 import org.osmdroid.api.IMapController;
@@ -86,7 +87,12 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(),p.getLatitude() + " , "+p.getLongitude(), Toast.LENGTH_LONG).show();
                 double lat = p.getLatitude();
                 double longt = p.getLongitude();
-                //DBHelper(lat, longt);
+                String geohash = "";
+                DBHelper mDatabase = new DBHelper(getBaseContext(),lat, longt, geohash);
+                if (mDatabase.insertData())
+                    Toast.makeText(getBaseContext(),"Added", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getBaseContext(),"Not Added", Toast.LENGTH_SHORT).show();
                 return true;
             }
 
