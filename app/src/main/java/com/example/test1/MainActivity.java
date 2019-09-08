@@ -9,6 +9,8 @@ import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.widget.Toast;
 
+import com.github.davidmoten.geo.GeoHash;
+
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
@@ -86,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(),p.getLatitude() + " , "+p.getLongitude(), Toast.LENGTH_LONG).show();
                 double lat = p.getLatitude();
                 double longt = p.getLongitude();
+                int length = 9;
                 String geohash = GeoHash.encodeHash(lat, longt, length);
                 DBHelper mDatabase = new DBHelper(getBaseContext(),lat, longt, geohash);
                 if (mDatabase.insertData())
