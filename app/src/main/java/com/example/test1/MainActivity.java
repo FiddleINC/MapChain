@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         map.setMultiTouchControls(true);
         IMapController mapController = map.getController();
         GeoPoint startPoint = new GeoPoint(22.308208, 87.281945);
-        mapController.setZoom(13);
+        mapController.setZoom(7);
         mapController.setCenter(startPoint);
 
         MinimapOverlay mMiniMap = new MinimapOverlay(this, map.getTileRequestCompleteHandler());
