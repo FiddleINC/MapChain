@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(),p.getLatitude() + " , "+p.getLongitude(), Toast.LENGTH_LONG).show();
                 double lat = p.getLatitude();
                 double longt = p.getLongitude();
-                String geohash = ""; // Add Function Call for Geohash Here
+                String geohash = GeoHash.encodeHash(lat, longt, length);
                 DBHelper mDatabase = new DBHelper(getBaseContext(),lat, longt, geohash);
                 if (mDatabase.insertData())
                     Toast.makeText(getBaseContext(),"Added", Toast.LENGTH_SHORT).show();
