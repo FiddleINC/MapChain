@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //handle permissions first, before map is created. not depicted here
-
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
@@ -47,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         map.setMultiTouchControls(true);
         IMapController mapController = map.getController();
         GeoPoint startPoint = new GeoPoint(22.308208, 87.281945);
-        mapController.setZoom(7);
+        mapController.setZoom(13);
         mapController.setCenter(startPoint);
 
         MinimapOverlay mMiniMap = new MinimapOverlay(this, map.getTileRequestCompleteHandler());
@@ -87,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(),p.getLatitude() + " , "+p.getLongitude(), Toast.LENGTH_LONG).show();
                 double lat = p.getLatitude();
                 double longt = p.getLongitude();
-                String geohash = "";
+                String geohash = ""; // Add Function Call for Geohash Here
                 DBHelper mDatabase = new DBHelper(getBaseContext(),lat, longt, geohash);
                 if (mDatabase.insertData())
                     Toast.makeText(getBaseContext(),"Added", Toast.LENGTH_SHORT).show();
