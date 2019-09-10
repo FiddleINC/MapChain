@@ -9,6 +9,8 @@ import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.widget.Toast;
 
+import com.github.davidmoten.geo.GeoHash;
+
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         map.setMultiTouchControls(true);
         IMapController mapController = map.getController();
         GeoPoint startPoint = new GeoPoint(22.308208, 87.281945);
-        mapController.setZoom(13);
+        mapController.setZoom(7);
         mapController.setCenter(startPoint);
 
         MinimapOverlay mMiniMap = new MinimapOverlay(this, map.getTileRequestCompleteHandler());
@@ -86,7 +88,8 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(),p.getLatitude() + " , "+p.getLongitude(), Toast.LENGTH_LONG).show();
                 double lat = p.getLatitude();
                 double longt = p.getLongitude();
-                String geohash = ""; // Add Function Call for Geohash Here
+                int length = 9;
+                String geohash = GeoHash.encodeHash(lat, longt, length);
                 DBHelper mDatabase = new DBHelper(getBaseContext(),lat, longt, geohash);
                 if (mDatabase.insertData())
                     Toast.makeText(getBaseContext(),"Added", Toast.LENGTH_SHORT).show();
