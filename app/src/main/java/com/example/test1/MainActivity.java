@@ -3,6 +3,7 @@ package com.example.test1;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
@@ -19,11 +20,15 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.MinimapOverlay;
+import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.TilesOverlay;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -73,6 +78,21 @@ public class MainActivity extends AppCompatActivity {
         startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         map.getOverlays().add(startMarker);
 
+        map.getOverlayManager().add(makePolygon());
+
+    }
+
+    public Polygon makePolygon(GeoPoint... points) {
+        List<GeoPoint> geoPoints = new ArrayList<>();
+        for (GeoPoint p : points) {
+            geoPoints.add(p);
+        }
+        Polygon polygon = new Polygon();    //see note below
+        polygon.setFillColor(Color.argb(75, 255,0,0));
+        //geoPoints.add(geoPoints.get(0));    //forces the loop to close
+        polygon.setPoints(geoPoints);
+        polygon.setTitle("A sample polygon");
+        return polygon;
     }
 
     public void onResume() {
@@ -87,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
     public MapEventsReceiver getData() {
         MapEventsReceiver mReceive = new MapEventsReceiver(){
-            @Override
+                @Override
             public boolean singleTapConfirmedHelper(GeoPoint p) {
                 double lat = p.getLatitude();
                 double longt = p.getLongitude();
