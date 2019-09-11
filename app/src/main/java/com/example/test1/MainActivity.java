@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         mCompassOverlay.enableCompass();
         map.getOverlays().add(mCompassOverlay);
 
-        map.getOverlays().add(new MapEventsOverlay(toast()));
+        map.getOverlays().add(new MapEventsOverlay(getData()));
 
         Marker startMarker = new Marker(map);
         startMarker.setPosition(startPoint);
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
     }
 
-    public MapEventsReceiver toast() {
+    public MapEventsReceiver getData() {
         MapEventsReceiver mReceive = new MapEventsReceiver(){
             @Override
             public boolean singleTapConfirmedHelper(GeoPoint p) {
