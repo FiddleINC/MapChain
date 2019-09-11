@@ -3,10 +3,8 @@ package com.example.test1;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
 import android.widget.Toast;
 
 import com.github.davidmoten.geo.GeoHash;
