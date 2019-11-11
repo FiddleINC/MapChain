@@ -1,21 +1,26 @@
 package geohasher;
 
-import ch.hsr.geohash.BoundingBox;
-import ch.hsr.geohash.GeoHash;
-import ch.hsr.geohash.util.BoundingBoxGeoHashIterator;
-import ch.hsr.geohash.util.TwoGeoHashBoundingBox;
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Polygon;
+
 import org.geotools.geometry.jts.JTSFactoryFinder;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ch.hsr.geohash.BoundingBox;
+import ch.hsr.geohash.GeoHash;
 
 public class GeoHasher {
 
     private static GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
 
     private static final char[] base32 = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'b', 'c', 'd', 'e', 'f',
-            'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+            'g', 'h', 'j', 'k', 'm', 'n'  , 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
     public static List<GeoHash> calculateGeohashes(Geometry polygon, int numCharsInHash){
         return calculateGeohashes(polygon, numCharsInHash, 1, null);

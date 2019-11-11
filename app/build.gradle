@@ -5,7 +5,7 @@ android {
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.example.test1"
-        minSdkVersion 15
+        minSdkVersion 24
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -19,13 +19,20 @@ android {
     }
 }
 allprojects {
-repositories {
-    maven { url 'https://github.com/davidmoten/' }
+    repositories {
+        maven { url 'https://github.com/davidmoten/' }
+    }
 }
+
+android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 dependencies {
     implementation 'com.github.davidmoten:geo:0.7.1'
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'org.osmdroid:osmdroid-android:6.0.0'
@@ -34,11 +41,6 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation 'com.google.android.material:material:1.0.0'
-    // https://mvnrepository.com/artifact/com.vividsolutions/jts
-    implementation group: 'com.vividsolutions', name: 'jts', version: '1.13'
-    // https://mvnrepository.com/artifact/org.geotools/geotools
-    implementation 'org.geotools:geotools:22.0'
-
-
+    implementation files('libs/geospark-1.1.2.jar')
 
 }
