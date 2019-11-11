@@ -6,9 +6,16 @@
     android:orientation="horizontal">
 
     <ImageButton
+        android:id="@+id/clickButton"
+        android:layout_width="72dp"
+        android:layout_height="77dp"
+        android:contentDescription="@string/base"
+        app:srcCompat="@android:drawable/checkbox_on_background" />
+
+    <ImageButton
         android:id="@+id/imageButton"
-        android:layout_width="88dp"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="76dp"
         android:adjustViewBounds="true"
         android:contentDescription="@string/about"
         android:cropToPadding="true"
@@ -16,16 +23,11 @@
         android:visibility="visible"
         app:srcCompat="@drawable/zoom_in" />
 
-    <ImageButton
-        android:id="@+id/clickButton"
-        android:layout_width="match_parent"
-        android:layout_height="76dp"
-        android:contentDescription="@string/base"
-        app:srcCompat="@android:drawable/checkbox_on_background" />
-
     <org.osmdroid.views.MapView
         android:id="@+id/map"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
+        android:layout_height="fill_parent">
+
+    </org.osmdroid.views.MapView>
 
 </LinearLayout>

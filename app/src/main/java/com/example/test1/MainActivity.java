@@ -2,8 +2,6 @@ package com.example.test1;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import geohasher.GeoHasher;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,6 +14,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 
+import com.github.davidmoten.geo.Coverage;
 import com.github.davidmoten.geo.GeoHash;
 
 import org.osmdroid.api.IMapController;
@@ -28,6 +27,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.MinimapOverlay;
+import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.TilesOverlay;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
 
     MapView map = null;
     //private CompassOverlay mCompassOverlay;
+    List<GeoPoint> points = new ArrayList<>();
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,24 +90,18 @@ public class MainActivity extends AppCompatActivity {
         startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         map.getOverlays().add(startMarker);
 
-        ImageButton button = (ImageButton) findViewById(R.id.imageButton);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getBaseContext(),"Make Polygon", Toast.LENGTH_SHORT).show();
-                map.getOverlays().add(new MapEventsOverlay(getPoints()));
-                //map.getOverlayManager().add(makePolygon(NULL));
-            }
+        ImageButton button = findViewById(R.id.imageButton);
+        ImageButton button1 = findViewById(R.id.clickButton);
+
+
+        button.setOnClickListener(view -> {
+            Toast.makeText(getBaseContext(),"Select Points", Toast.LENGTH_SHORT).show();
+            map.getOverlayManager().add(new MapEventsOverlay(getPoints()));
         });
 
-        ImageButton button1 = (ImageButton) findViewById(R.id.clickButton);
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getBaseContext(),"Polygon Created", Toast.LENGTH_SHORT).show();
-                map.getOverlays().add(new MapEventsOverlay(getPoints()));
-                //map.getOverlayManager().add(makePolygon(NULL));
-            }
+        button1.setOnClickListener(view -> {
+            Toast.makeText(getBaseContext(),"Polygon Created", Toast.LENGTH_SHORT).show();
+            boundingBox();
         });
     }
 
@@ -113,16 +109,18 @@ public class MainActivity extends AppCompatActivity {
         MapEventsReceiver mReceive = new MapEventsReceiver(){
             @Override
             public boolean singleTapConfirmedHelper(GeoPoint p) {
+                System.out.println(p.getLatitude() + " " + p.getLongitude());
                 Marker startMarker = new Marker(map);
                 startMarker.setPosition(p);
                 startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
                 map.getOverlays().add(startMarker);
+                points.add(p);
+                Toast.makeText(getBaseContext(),"Selected", Toast.LENGTH_SHORT).show();
                 return true;
             }
 
             @Override
             public boolean longPressHelper(GeoPoint p) {
-                List<GeoPoint> points = new ArrayList<>();
                 return false;
             }
         };
@@ -130,17 +128,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public Polygon makePolygon(List<GeoPoint> points) {
-        List<GeoPoint> geoPoints = new ArrayList<>();
-        for (GeoPoint p : points) {
-            geoPoints.add(p);
+    public void boundingBox() {
+        double left = +180.00000000, right = -180.0000000, top = -90.00000000 ,bottom = 90.0000000;
+        for(GeoPoint p : points) {
+            System.out.println(p.getLatitude() + " " + p.getLongitude());
+            if ( p.getLatitude() < bottom) {
+                bottom = p.getLatitude();
+            }
+            if ( p.getLatitude() > top) {
+                top = p.getLatitude();
+            }
+            if ( p.getLongitude() < left) {
+                left = p.getLongitude();
+            }
+            if ( p.getLongitude() > right) {
+                right = p.getLongitude();
+            }
+            System.out.println(left + " " + right + " " + top + " " + bottom);
         }
-        Polygon polygon = new Polygon();    //see note below
-        polygon.setFillColor(Color.argb(75, 255,0,0));
-        //geoPoints.add(geoPoints.get(0));    //forces the loop to close
-        polygon.setPoints(geoPoints);
-        polygon.setTitle("A sample polygon");
-        return polygon;
+        int precision = 8;
+        Coverage hashL = GeoHash.coverBoundingBox(top, left, bottom, right, 9);
+        double diff = hashL.getRatio() - 1;
+        while( diff < 0.1) {
+            hashL = GeoHash.coverBoundingBox(top, left, bottom, right, precision);
+            diff = hashL.getRatio() - 1;
+            precision--;
+        }
+        System.out.println(hashL.getHashes());
+        System.out.println(hashL.getRatio());
+        points.clear();
+        Toast.makeText(getBaseContext(),"Cleared", Toast.LENGTH_SHORT).show();
     }
 
     public void onResume() {
@@ -161,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                 double longt = p.getLongitude();
                 int length = 9;
                 String geohash = GeoHash.encodeHash(lat, longt, length);
-                System.out.println("geohash:" + geohash);
+                System.out.println("Geohash: " + geohash);
                 DBHelper mDatabase = new DBHelper(getBaseContext(),lat, longt, geohash);
                 if (mDatabase.insertData())
                     Toast.makeText(getBaseContext(),"Added", Toast.LENGTH_SHORT).show();
