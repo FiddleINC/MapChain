@@ -2,16 +2,10 @@ package com.example.test1;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import android.content.Context;
-import android.graphics.Color;
 import android.preference.PreferenceManager;
 
 import com.github.davidmoten.geo.Coverage;
@@ -21,21 +15,21 @@ import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.tileprovider.MapTileProviderBasic;
+import org.osmdroid.tileprovider.tilesource.ITileSource;
+import org.osmdroid.tileprovider.tilesource.MapBoxTileSource;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.tileprovider.util.CloudmadeUtil;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.MinimapOverlay;
-import org.osmdroid.views.overlay.Overlay;
-import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.TilesOverlay;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,14 +37,12 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     MapView map = null;
-    //private CompassOverlay mCompassOverlay;
     List<GeoPoint> points = new ArrayList<>();
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        System.out.println("geohash:" );
         //handle permissions first, before map is created. not depicted here
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
@@ -58,9 +50,13 @@ public class MainActivity extends AppCompatActivity {
         //inflate and create the map
         setContentView(R.layout.activity_main);
 
-
-        map = (MapView) findViewById(R.id.map);
-        map.setTileSource(TileSourceFactory.MAPNIK);
+        map = findViewById(R.id.map);
+        final MapBoxTileSource tileSource = new MapBoxTileSource();
+        //option 1, load your settings from the manifest
+        tileSource.setAccessToken("pk.eyJ1IjoicHJhY2h1cmp5YWIiLCJhIjoiY2sydnZtOGQyMDlnejNuc2Nxc3Fia2syYyJ9.KVVhPvmN4jc-x7eZWMqr4g");
+        tileSource.setMapboxMapid("mapbox.streets");
+        map.setTileSource(tileSource);
+        //map.setTileSource(TileSourceFactory.MAPNIK);
         map.setMultiTouchControls(true);
         IMapController mapController = map.getController();
         GeoPoint startPoint = new GeoPoint(22.308208, 87.281945);
@@ -90,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
         startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         map.getOverlays().add(startMarker);
 
-        ImageButton button = findViewById(R.id.imageButton);
-        ImageButton button1 = findViewById(R.id.clickButton);
+        ImageButton button = findViewById(R.id.AddButton);
+        ImageButton button1 = findViewById(R.id.DoneButton);
 
 
         button.setOnClickListener(view -> {
@@ -131,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
     public void boundingBox() {
         double left = +180.00000000, right = -180.0000000, top = -90.00000000 ,bottom = 90.0000000;
         for(GeoPoint p : points) {
-            System.out.println(p.getLatitude() + " " + p.getLongitude());
+            //System.out.println(p.getLatitude() + " " + p.getLongitude());
             if ( p.getLatitude() < bottom) {
                 bottom = p.getLatitude();
             }
@@ -144,15 +140,15 @@ public class MainActivity extends AppCompatActivity {
             if ( p.getLongitude() > right) {
                 right = p.getLongitude();
             }
-            System.out.println(left + " " + right + " " + top + " " + bottom);
+            //System.out.println(left + " " + right + " " + top + " " + bottom);
         }
-        int precision = 8;
-        Coverage hashL = GeoHash.coverBoundingBox(top, left, bottom, right, 9);
+        int precision = 2;
+        Coverage hashL = GeoHash.coverBoundingBox(top, left, bottom, right, 1);
         double diff = hashL.getRatio() - 1;
-        while( diff < 0.1) {
+        while( diff > 0.1) {
             hashL = GeoHash.coverBoundingBox(top, left, bottom, right, precision);
             diff = hashL.getRatio() - 1;
-            precision--;
+            precision++;
         }
         System.out.println(hashL.getHashes());
         System.out.println(hashL.getRatio());

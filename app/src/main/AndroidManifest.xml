@@ -22,4 +22,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"  />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <meta-data android:name="MAPBOX_TILESETID" android:value="mapbox.mapbox-streets-v8" />
+    <meta-data android:name="MAPBOX_ACCESS_TOKEN" android:value="pk.eyJ1IjoicHJhY2h1cmp5YWIiLCJhIjoiY2sydnZtOGQyMDlnejNuc2Nxc3Fia2syYyJ9.KVVhPvmN4jc-x7eZWMqr4g" />
 </manifest>
