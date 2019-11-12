@@ -14,19 +14,11 @@ import com.github.davidmoten.geo.GeoHash;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
-import org.osmdroid.tileprovider.MapTileProviderBasic;
-import org.osmdroid.tileprovider.tilesource.ITileSource;
-import org.osmdroid.tileprovider.tilesource.MapBoxTileSource;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
-import org.osmdroid.tileprovider.util.CloudmadeUtil;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.MinimapOverlay;
-import org.osmdroid.views.overlay.TilesOverlay;
-import org.osmdroid.views.overlay.compass.CompassOverlay;
-import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -51,35 +43,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         map = findViewById(R.id.map);
-        final MapBoxTileSource tileSource = new MapBoxTileSource();
-        //option 1, load your settings from the manifest
-        tileSource.setAccessToken("pk.eyJ1IjoicHJhY2h1cmp5YWIiLCJhIjoiY2sydnZtOGQyMDlnejNuc2Nxc3Fia2syYyJ9.KVVhPvmN4jc-x7eZWMqr4g");
-        tileSource.setMapboxMapid("mapbox.streets");
-        map.setTileSource(tileSource);
-        //map.setTileSource(TileSourceFactory.MAPNIK);
+        map.setTileSource(TileSourceFactory.MAPNIK);
         map.setMultiTouchControls(true);
         IMapController mapController = map.getController();
         GeoPoint startPoint = new GeoPoint(22.308208, 87.281945);
         mapController.setZoom(7);
         mapController.setCenter(startPoint);
 
-        MinimapOverlay mMiniMap = new MinimapOverlay(this, map.getTileRequestCompleteHandler());
-        map.getOverlays().add(mMiniMap);
-
-        MapTileProviderBasic mProvider = new MapTileProviderBasic(getApplicationContext());
-        mProvider.setTileSource(TileSourceFactory.FIETS_OVERLAY_NL);
-        TilesOverlay mTilesOverlay = new TilesOverlay(mProvider, this.getBaseContext());
-        map.getOverlays().add(mTilesOverlay);
-
         MyLocationNewOverlay mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getApplicationContext()), map);
         mLocationOverlay.enableMyLocation();
         map.getOverlays().add(mLocationOverlay);
 
-        CompassOverlay mCompassOverlay = new CompassOverlay(getApplicationContext(), new InternalCompassOrientationProvider(getApplicationContext()), map);
-        mCompassOverlay.enableCompass();
-        map.getOverlays().add(mCompassOverlay);
-
-        map.getOverlays().add(new MapEventsOverlay(getData()));
+        //map.getOverlays().add(new MapEventsOverlay(getData()));
 
         Marker startMarker = new Marker(map);
         startMarker.setPosition(startPoint);
@@ -88,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
 
         ImageButton button = findViewById(R.id.AddButton);
         ImageButton button1 = findViewById(R.id.DoneButton);
-
 
         button.setOnClickListener(view -> {
             Toast.makeText(getBaseContext(),"Select Points", Toast.LENGTH_SHORT).show();
@@ -166,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
         map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
     }
 
-    public MapEventsReceiver getData() {
+    /*public MapEventsReceiver getData() {
         MapEventsReceiver mReceive = new MapEventsReceiver(){
                 @Override
             public boolean singleTapConfirmedHelper(GeoPoint p) {
@@ -191,5 +165,5 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         return mReceive;
-    }
+    }*/
 }
