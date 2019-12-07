@@ -5,30 +5,30 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.Set;
+
 
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "Mapchain";
     private static final int DATABASE_VERSION = 1;
     private static final String TABLE_NAME = "MapData";
-    private static final String COLUMN_LATITUDE = "Latitude";
-    private static final String COLUMN_LONGITUDE= "Longitude";
+    private static final String COLUMN_HEXHASH = "HexHash";
     private static final String COLUMN_GEOHASH = "Geohash";
 
-    private static double latitude,longitude;
-    private static String Geohash;
+    private static String hexHash;
+    private static Set<String> Geohash;
 
-    DBHelper(Context context, double lat, double longt, String geohash) {
+    DBHelper(Context context, String hexhash, Set<String> geohash) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
 
-        latitude = lat;
-        longitude = longt;
+        hexHash = hexhash;
         Geohash = geohash;
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String sql = "CREATE TABLE " + TABLE_NAME + " ("  + COLUMN_LATITUDE + " double NOT NULL," +  COLUMN_LONGITUDE + " double NOT NULL," + COLUMN_GEOHASH + " varchar(200) NOT NULL" + ");";
+        String sql = "CREATE TABLE " + TABLE_NAME + " ("  + COLUMN_HEXHASH + " string NOT NULL," + COLUMN_GEOHASH + " string NOT NULL" + ");";
         sqLiteDatabase.execSQL(sql);
     }
 
@@ -41,10 +41,13 @@ public class DBHelper extends SQLiteOpenHelper {
 
     boolean insertData () {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_LATITUDE, latitude);
-        contentValues.put(COLUMN_LONGITUDE, longitude);
-        contentValues.put(COLUMN_GEOHASH, Geohash);
+        for(String geohash : Geohash) {
+            contentValues.put(COLUMN_HEXHASH, hexHash);
+            contentValues.put(COLUMN_GEOHASH, geohash);
+        }
         SQLiteDatabase db = getWritableDatabase();
+        onUpgrade(db, 0, 0);
+        System.out.println("SQL DONE");
         return db.insert(TABLE_NAME, null, contentValues) != -1;
     }
 }

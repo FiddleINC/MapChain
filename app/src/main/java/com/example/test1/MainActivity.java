@@ -2,7 +2,11 @@ package com.example.test1;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import android.content.Context;
@@ -19,11 +23,17 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -54,8 +64,6 @@ public class MainActivity extends AppCompatActivity {
         mLocationOverlay.enableMyLocation();
         map.getOverlays().add(mLocationOverlay);
 
-        //map.getOverlays().add(new MapEventsOverlay(getData()));
-
         Marker startMarker = new Marker(map);
         startMarker.setPosition(startPoint);
         startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
@@ -72,6 +80,16 @@ public class MainActivity extends AppCompatActivity {
         button1.setOnClickListener(view -> {
             Toast.makeText(getBaseContext(),"Polygon Created", Toast.LENGTH_SHORT).show();
             boundingBox();
+            LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
+            View popupInputDialogView = layoutInflater.inflate(R.layout.metadata_form, null);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+            alertDialogBuilder.setView(popupInputDialogView);
+
+            // Create AlertDialog and show.
+            final AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+
+
         });
     }
 
@@ -97,11 +115,43 @@ public class MainActivity extends AppCompatActivity {
         return mReceive;
     }
 
+    public static byte[] getSHA(String input) throws NoSuchAlgorithmException
+    {
+        // Static getInstance method is called with hashing SHA
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+
+        // digest() method called
+        // to calculate message digest of an input
+        // and return array of byte
+        return md.digest(input.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static String toHexString(byte[] hash)
+    {
+        // Convert byte array into signum representation
+        BigInteger number = new BigInteger(1, hash);
+
+        // Convert message digest into hex value
+        StringBuilder hexString = new StringBuilder(number.toString(16));
+
+        // Pad with leading zeros
+        while (hexString.length() < 32)
+        {
+            hexString.insert(0, '0');
+        }
+
+        return hexString.toString();
+    }
+
 
     public void boundingBox() {
+        List<GeoPoint> geoPoints = points;
+        Polygon polygon = new Polygon();    //see note below
+        polygon.setFillColor(Color.argb(30, 0,0,255));
+        geoPoints.add(points.get(0));    //forces the loop to close
+        map.getOverlayManager().add(polygon);
         double left = +180.00000000, right = -180.0000000, top = -90.00000000 ,bottom = 90.0000000;
         for(GeoPoint p : points) {
-            //System.out.println(p.getLatitude() + " " + p.getLongitude());
             if ( p.getLatitude() < bottom) {
                 bottom = p.getLatitude();
             }
@@ -114,18 +164,27 @@ public class MainActivity extends AppCompatActivity {
             if ( p.getLongitude() > right) {
                 right = p.getLongitude();
             }
-            //System.out.println(left + " " + right + " " + top + " " + bottom);
         }
         int precision = 2;
         Coverage hashL = GeoHash.coverBoundingBox(top, left, bottom, right, 1);
         double diff = hashL.getRatio() - 1;
-        while( diff > 0.1) {
+        while( diff > 1) {
             hashL = GeoHash.coverBoundingBox(top, left, bottom, right, precision);
             diff = hashL.getRatio() - 1;
             precision++;
         }
-        System.out.println(hashL.getHashes());
-        System.out.println(hashL.getRatio());
+        String hash = "";
+        for(String s : hashL.getHashes()) {
+            hash = hash + s;
+        }
+        try {
+            String hexHash = toHexString(getSHA(hash));
+            DBHelper dbhelper = new DBHelper(getBaseContext(), hexHash, hashL.getHashes());
+            dbhelper.insertData();
+        }
+        catch(NoSuchAlgorithmException e) {
+            System.out.println("Exception thrown for incorrect algorithm: " + e);
+        }
         points.clear();
         Toast.makeText(getBaseContext(),"Cleared", Toast.LENGTH_SHORT).show();
     }
@@ -139,31 +198,4 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
     }
-
-    /*public MapEventsReceiver getData() {
-        MapEventsReceiver mReceive = new MapEventsReceiver(){
-                @Override
-            public boolean singleTapConfirmedHelper(GeoPoint p) {
-                double lat = p.getLatitude();
-                double longt = p.getLongitude();
-                int length = 9;
-                String geohash = GeoHash.encodeHash(lat, longt, length);
-                System.out.println("Geohash: " + geohash);
-                DBHelper mDatabase = new DBHelper(getBaseContext(),lat, longt, geohash);
-                if (mDatabase.insertData())
-                    Toast.makeText(getBaseContext(),"Added", Toast.LENGTH_SHORT).show();
-                else
-                    //Toast.makeText(getBaseContext(), Toast.LENGTH_SHORT).show();
-                    Toast.makeText(getBaseContext(),"Not Added", Toast.LENGTH_SHORT).show();
-
-                    return true;
-                }
-
-            @Override
-            public boolean longPressHelper(GeoPoint p) {
-                return false;
-            }
-        };
-        return mReceive;
-    }*/
 }

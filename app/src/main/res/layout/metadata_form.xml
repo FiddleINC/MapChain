@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="20dp">
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <TextView
+            android:gravity="end"
+            android:text="User Name : " />
+
+        <EditText
+            android:id="@+id/userName"
+            android:hint="Input user name"
+            android:inputType="text" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <TextView
+            android:gravity="end"
+            android:text="Password : " />
+
+        <EditText
+            android:id="@+id/password"
+            android:hint="Input password"
+            android:inputType="textPassword" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <TextView
+            android:gravity="end"
+            android:text="Email : " />
+
+        <EditText
+            android:id="@+id/email"
+            android:hint="Input email"
+            android:inputType="text" />
+
+    </TableRow>
+
+</TableLayout>
