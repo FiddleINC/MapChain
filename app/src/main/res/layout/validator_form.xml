@@ -14,39 +14,43 @@
         android:layout_gravity="center_horizontal">
 
         <LinearLayout
-            android:id="@+id/formLayout"
+            android:id="@+id/validatorformLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/textname"
+                android:id="@+id/validatortextname"
                 android:layout_gravity="end"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Name" />
 
             <EditText
-                android:id="@+id/userName"
+                android:id="@+id/validatoruserName"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="Input GIS Object name"
-                android:inputType="text" />
+                android:hint="Input GIS Object name"/>
 
-            <Button
-                android:id="@+id/addpropbutton"
+            <TextView
+                android:id="@+id/descriptionname"
+                android:layout_gravity="end"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Description" />
+
+            <EditText
+                android:id="@+id/description"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Add Property" />
+                android:hint="Description"/>
 
             <Button
-                android:id="@+id/propdoneButton"
+                android:id="@+id/validatorDoneButton"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="Done" />
         </LinearLayout>
     </LinearLayout>
-
-
 </LinearLayout>

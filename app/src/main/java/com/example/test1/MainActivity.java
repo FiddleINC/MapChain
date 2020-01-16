@@ -7,7 +7,13 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TableLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Context;
 import android.preference.PreferenceManager;
@@ -41,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
     MapView map = null;
     List<GeoPoint> points = new ArrayList<>();
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,17 +65,9 @@ public class MainActivity extends AppCompatActivity {
         mapController.setZoom(7);
         mapController.setCenter(startPoint);
 
-        MyLocationNewOverlay mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getApplicationContext()), map);
-        mLocationOverlay.enableMyLocation();
-        map.getOverlays().add(mLocationOverlay);
-
-        Marker startMarker = new Marker(map);
-        startMarker.setPosition(startPoint);
-        startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-        map.getOverlays().add(startMarker);
-
         ImageButton button = findViewById(R.id.AddButton);
         ImageButton button1 = findViewById(R.id.DoneButton);
+        ImageButton button2 = findViewById(R.id.ValidatorButton);
 
         button.setOnClickListener(view -> {
             Toast.makeText(getBaseContext(),"Select Points", Toast.LENGTH_SHORT).show();
@@ -81,15 +78,53 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getBaseContext(),"Polygon Created", Toast.LENGTH_SHORT).show();
             boundingBox();
             LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
-            View popupInputDialogView = layoutInflater.inflate(R.layout.metadata_form, null);
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-            alertDialogBuilder.setView(popupInputDialogView);
+            //LayoutInflater layoutInflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+            View popupInputView = layoutInflater.inflate(R.layout.metadata_form, null);
 
-            // Create AlertDialog and show.
-            final AlertDialog alertDialog = alertDialogBuilder.create();
-            alertDialog.show();
+            final PopupWindow popupWindow = new PopupWindow(popupInputView, TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT);
+            popupWindow.showAsDropDown(popupInputView, 20, 20);
 
+            Button addButton = popupInputView.findViewById(R.id.addpropbutton);
+            Button doneButton = popupInputView.findViewById(R.id.propdoneButton);
+            LinearLayout formLayout = popupInputView.findViewById(R.id.formLayout);
 
+            addButton.setOnClickListener(v -> {
+                TextView tagName = new TextView(this);
+                tagName.setText("Tag Name");
+                formLayout.addView(tagName);
+
+                EditText tagNameInput = new EditText(this);
+                formLayout.addView(tagNameInput);
+                String tagNameInputString = tagNameInput.getText().toString();
+                System.out.println(tagNameInputString);
+
+                TextView tagValue = new TextView(this);
+                tagValue.setText("Value");
+                formLayout.addView(tagValue);
+
+                EditText tagValueInput = new EditText(this);
+                formLayout.addView(tagValueInput);
+                String tagValueInputString = tagNameInput.getText().toString();
+                System.out.println(tagValueInputString);
+            });
+
+            doneButton.setOnClickListener(v -> {
+                popupWindow.dismiss();
+            });
+        });
+
+        button2.setOnClickListener(view -> {
+            LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
+            //LayoutInflater layoutInflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+            View popupInputView = layoutInflater.inflate(R.layout.validator_form, null);
+
+            final PopupWindow popupWindow = new PopupWindow(popupInputView, TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT);
+            popupWindow.showAsDropDown(popupInputView, 20, 20);
+
+            Button doneButton = popupInputView.findViewById(R.id.validatorDoneButton);
+            doneButton.setOnClickListener(v -> {
+                popupWindow.dismiss();
+            });
         });
     }
 
@@ -97,11 +132,10 @@ public class MainActivity extends AppCompatActivity {
         MapEventsReceiver mReceive = new MapEventsReceiver(){
             @Override
             public boolean singleTapConfirmedHelper(GeoPoint p) {
-                System.out.println(p.getLatitude() + " " + p.getLongitude());
-                Marker startMarker = new Marker(map);
-                startMarker.setPosition(p);
-                startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-                map.getOverlays().add(startMarker);
+                Marker Marker = new Marker(map);
+                Marker.setPosition(p);
+                Marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                map.getOverlays().add(Marker);
                 points.add(p);
                 Toast.makeText(getBaseContext(),"Selected", Toast.LENGTH_SHORT).show();
                 return true;
@@ -115,34 +149,19 @@ public class MainActivity extends AppCompatActivity {
         return mReceive;
     }
 
-    public static byte[] getSHA(String input) throws NoSuchAlgorithmException
-    {
-        // Static getInstance method is called with hashing SHA
+    public static byte[] getSHA(String input) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
-
-        // digest() method called
-        // to calculate message digest of an input
-        // and return array of byte
         return md.digest(input.getBytes(StandardCharsets.UTF_8));
     }
 
-    public static String toHexString(byte[] hash)
-    {
-        // Convert byte array into signum representation
+    public static String toHexString(byte[] hash) {
         BigInteger number = new BigInteger(1, hash);
-
-        // Convert message digest into hex value
         StringBuilder hexString = new StringBuilder(number.toString(16));
-
-        // Pad with leading zeros
-        while (hexString.length() < 32)
-        {
+        while (hexString.length() < 32) {
             hexString.insert(0, '0');
         }
-
         return hexString.toString();
     }
-
 
     public void boundingBox() {
         List<GeoPoint> geoPoints = points;
@@ -186,7 +205,6 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("Exception thrown for incorrect algorithm: " + e);
         }
         points.clear();
-        Toast.makeText(getBaseContext(),"Cleared", Toast.LENGTH_SHORT).show();
     }
 
     public void onResume() {
