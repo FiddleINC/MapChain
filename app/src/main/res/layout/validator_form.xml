@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/cardview_dark_background">
 
@@ -25,32 +25,32 @@
                 android:layout_gravity="end"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Name" />
+                android:text="Username" />
 
             <EditText
                 android:id="@+id/validatoruserName"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="Input GIS Object name"/>
+                android:hint="Input Validator Username"/>
 
             <TextView
                 android:id="@+id/descriptionname"
                 android:layout_gravity="end"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Description" />
+                android:text="Password" />
 
             <EditText
                 android:id="@+id/description"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="Description"/>
+                android:hint="Enter Validator Password"/>
 
             <Button
                 android:id="@+id/validatorDoneButton"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Done" />
+                android:text="Login" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
